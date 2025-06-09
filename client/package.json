@@ -2,6 +2,7 @@
   "name": "agendasis-client",
   "version": "1.0.0",
   "private": true,
+  "type": "module",
   "dependencies": {
     "@headlessui/react": "^1.7.13",
     "@heroicons/react": "^2.2.0",

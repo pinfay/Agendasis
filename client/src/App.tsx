@@ -4,7 +4,6 @@ import { AuthProvider } from './contexts/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import DashboardLayout from './components/DashboardLayout';
 import AdminDashboard from './pages/AdminDashboard';
-import HamburgerMenu from './components/HamburgerMenu';
 
 // Pages
 import Landing from './pages/Landing';
@@ -26,20 +25,6 @@ const App = () => {
       <AuthProvider>
         <Toaster position="top-right" />
         <div className="min-h-screen bg-gray-900 text-white">
-          {/* Hamburger Menu - only show on protected routes */}
-          <Routes>
-            <Route path="/login" element={null} />
-            <Route path="/register" element={null} />
-            <Route
-              path="*"
-              element={
-                <div className="fixed top-4 right-4 z-50">
-                  <HamburgerMenu />
-                </div>
-              }
-            />
-          </Routes>
-
           <Routes>
             {/* Public routes */}
             <Route path="/" element={<Landing />} />
@@ -114,7 +99,6 @@ const App = () => {
               }
             >
               <Route index element={<AdminDashboard />} />
-              {/* Add other admin routes here */}
             </Route>
             <Route path="/agendar" element={<AppointmentForm />} />
             <Route path="/tutorial" element={<OnboardingTutorial />} />
