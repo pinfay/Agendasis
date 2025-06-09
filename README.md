@@ -98,4 +98,4 @@ Este projeto está sob a licença MIT. Veja o arquivo [LICENSE](LICENSE) para ma
 
 ## 📞 Suporte
 
-Para suporte, envie um email para [seu-email@exemplo.com] 
+Para suporte, envie um email para [ponteslucas76@gmail.com] 
