@@ -1,0 +1,122 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String        @id @default(uuid())
+  email         String        @unique
+  password      String
+  firstName     String
+  lastName      String
+  role          Role         @default(CLIENT)
+  phone         String?
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+  appointments  Appointment[]
+  reviews       Review[]
+  feedbacks     Feedback[]
+  loyaltyPoints Int          @default(0)
+}
+
+model Barber {
+  id           String        @id @default(uuid())
+  firstName    String
+  lastName     String
+  email        String        @unique
+  phone        String?
+  specialties  String[]
+  appointments Appointment[]
+  reviews      Review[]
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+}
+
+model Service {
+  id           String        @id @default(uuid())
+  name         String
+  description  String?
+  duration     Int          // duração em minutos
+  price        Float
+  appointments Appointment[]
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+}
+
+model Appointment {
+  id        String    @id @default(uuid())
+  date      DateTime
+  status    Status    @default(PENDING)
+  userId    String
+  barberId  String
+  serviceId String
+  user      User      @relation(fields: [userId], references: [id])
+  barber    Barber    @relation(fields: [barberId], references: [id])
+  service   Service   @relation(fields: [serviceId], references: [id])
+  payment   Payment?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+model Review {
+  id        String   @id @default(uuid())
+  rating    Int
+  comment   String?
+  userId    String
+  barberId  String
+  user      User     @relation(fields: [userId], references: [id])
+  barber    Barber   @relation(fields: [barberId], references: [id])
+  createdAt DateTime @default(now())
+}
+
+model Payment {
+  id            String      @id @default(uuid())
+  amount        Float
+  status        PayStatus   @default(PENDING)
+  appointmentId String      @unique
+  appointment   Appointment @relation(fields: [appointmentId], references: [id])
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+}
+
+model Feedback {
+  id        String   @id @default(uuid())
+  message   String
+  type      String   // 'SUGGESTION', 'BUG', 'COMPLIMENT', etc.
+  rating    Int?     // Optional rating (1-5)
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+enum Role {
+  ADMIN
+  OWNER
+  BARBER
+  CLIENT
+}
+
+enum Status {
+  PENDING
+  CONFIRMED
+  CANCELLED
+  COMPLETED
+}
+
+enum PayStatus {
+  PENDING
+  PAID
+  FAILED
+  REFUNDED
+}

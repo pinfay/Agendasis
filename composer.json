@@ -1,0 +1,9 @@
+{
+    "name": "agendasis/api",
+    "description": "API for AgendaSIS barbershop management system",
+    "require": {
+        "php": "^8.0",
+        "ext-pdo": "*",
+        "ext-json": "*"
+    }
+} 
