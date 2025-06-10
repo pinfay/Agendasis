@@ -1,7 +1,7 @@
 import axios, { InternalAxiosRequestConfig } from 'axios';
 
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:3333/api',
+  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:5000/api',
   headers: {
     'Content-Type': 'application/json',
   },
@@ -9,7 +9,7 @@ const api = axios.create({
 
 // Add token to requests
 api.interceptors.request.use((config: InternalAxiosRequestConfig) => {
-  const token = localStorage.getItem('token');
+  const token = localStorage.getItem('@AgendaSis:token');
   if (token) {
     config.headers = config.headers || {};
     config.headers.Authorization = `Bearer ${token}`;
@@ -19,11 +19,19 @@ api.interceptors.request.use((config: InternalAxiosRequestConfig) => {
 
 // Auth services
 export const auth = {
-  register: async (data: { name: string; email: string; password: string; role?: string }) =>
-    api.post('/auth/register', data),
+  register: async (data: { 
+    firstName: string;
+    lastName: string;
+    email: string;
+    password: string;
+    role: 'CLIENT' | 'ADMIN' | 'OWNER' | 'BARBER';
+    phone?: string;
+  }) => api.post('/auth/register', data),
   
-  login: async (data: { email: string; password: string }) =>
-    api.post('/auth/login', data),
+  login: async (data: { 
+    email: string;
+    password: string;
+  }) => api.post('/auth/login', data),
   
   me: async () => api.get('/auth/me'),
 };

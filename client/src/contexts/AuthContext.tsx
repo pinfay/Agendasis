@@ -5,17 +5,26 @@ import { toast } from 'react-hot-toast';
 
 interface User {
   id: string;
-  name: string;
+  firstName: string;
+  lastName: string;
   email: string;
-  role: 'client' | 'admin';
+  role: 'CLIENT' | 'ADMIN' | 'OWNER' | 'BARBER';
+  phone?: string;
 }
 
 interface AuthContextData {
   user: User | null;
   isAuthenticated: boolean;
   loading: boolean;
-  signIn: (email: string, password: string, role: 'client' | 'admin') => Promise<void>;
-  signUp: (name: string, email: string, password: string, role: 'client' | 'admin') => Promise<void>;
+  signIn: (email: string, password: string) => Promise<void>;
+  signUp: (data: {
+    firstName: string;
+    lastName: string;
+    email: string;
+    password: string;
+    role: 'CLIENT' | 'ADMIN' | 'OWNER' | 'BARBER';
+    phone?: string;
+  }) => Promise<void>;
   signOut: () => void;
 }
 
@@ -48,12 +57,11 @@ export function AuthProvider({ children }: AuthProviderProps) {
     throw error;
   };
 
-  const signIn = async (email: string, password: string, role: 'client' | 'admin') => {
+  const signIn = async (email: string, password: string) => {
     try {
       const response = await api.post('/auth/login', {
         email,
-        password,
-        role
+        password
       });
 
       const { token, user: userData } = response.data;
@@ -68,14 +76,16 @@ export function AuthProvider({ children }: AuthProviderProps) {
     }
   };
 
-  const signUp = async (name: string, email: string, password: string, role: 'client' | 'admin') => {
+  const signUp = async (data: {
+    firstName: string;
+    lastName: string;
+    email: string;
+    password: string;
+    role: 'CLIENT' | 'ADMIN' | 'OWNER' | 'BARBER';
+    phone?: string;
+  }) => {
     try {
-      const response = await api.post('/auth/register', {
-        name,
-        email,
-        password,
-        role
-      });
+      const response = await api.post('/auth/register', data);
 
       const { token, user: userData } = response.data;
 

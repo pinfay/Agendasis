@@ -93,7 +93,8 @@ export default function Navigation() {
                 <Menu.Item>
                   {({ active }) => (
                     <Link
-                      to="/login/client"
+                      to="/auth/login"
+                      state={{ role: 'client' }}
                       className={`${
                         active ? 'bg-primary/5' : ''
                       } block px-4 py-2 text-sm text-gray-700 rounded-lg`}
@@ -105,7 +106,8 @@ export default function Navigation() {
                 <Menu.Item>
                   {({ active }) => (
                     <Link
-                      to="/login/admin"
+                      to="/auth/login"
+                      state={{ role: 'admin' }}
                       className={`${
                         active ? 'bg-primary/5' : ''
                       } block px-4 py-2 text-sm text-gray-700 rounded-lg`}

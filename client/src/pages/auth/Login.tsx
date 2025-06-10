@@ -1,16 +1,17 @@
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { toast } from 'react-hot-toast';
 
 export default function Login() {
   const navigate = useNavigate();
+  const location = useLocation();
   const { signIn } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
     email: '',
     password: '',
-    role: 'client' as 'client' | 'admin'
+    role: (location.state?.role || 'client') as 'client' | 'admin'
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -20,7 +21,11 @@ export default function Login() {
     try {
       await signIn(formData.email, formData.password, formData.role);
       toast.success('Login realizado com sucesso!');
-      navigate(formData.role === 'client' ? '/dashboard/client' : '/dashboard/admin');
+      if (formData.role === 'admin') {
+        navigate('/dashboard/admin');
+      } else {
+        navigate('/dashboard');
+      }
     } catch (error) {
       toast.error('Erro ao fazer login. Verifique suas credenciais.');
     } finally {
@@ -40,7 +45,7 @@ export default function Login() {
             />
           </Link>
           <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-            Entre na sua conta
+            {formData.role === 'admin' ? 'Login Administrativo' : 'Login do Cliente'}
           </h2>
         </div>
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
@@ -80,17 +85,6 @@ export default function Login() {
           </div>
 
           <div className="flex items-center justify-between">
-            <div className="flex items-center">
-              <select
-                className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-primary focus:border-primary sm:text-sm rounded-md"
-                value={formData.role}
-                onChange={(e) => setFormData({ ...formData, role: e.target.value as 'client' | 'admin' })}
-              >
-                <option value="client">Cliente</option>
-                <option value="admin">Administrador</option>
-              </select>
-            </div>
-
             <div className="text-sm">
               <Link
                 to="/auth/forgot-password"

@@ -1,7 +1,6 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 import { AuthProvider } from './contexts/AuthContext';
-import PrivateRoute from './components/PrivateRoute';
 
 // Layouts
 import DashboardLayout from './layouts/DashboardLayout';
@@ -37,15 +36,8 @@ function App() {
           <Route path="/auth/login" element={<Login />} />
           <Route path="/auth/register" element={<Register />} />
 
-          {/* Client Routes */}
-          <Route
-            path="/dashboard"
-            element={
-              <PrivateRoute>
-                <DashboardLayout />
-              </PrivateRoute>
-            }
-          >
+          {/* Client Routes - Temporarily without protection */}
+          <Route path="/dashboard" element={<DashboardLayout />}>
             <Route index element={<ClientDashboard />} />
             <Route path="schedule" element={<Schedule />} />
             <Route path="history" element={<History />} />
@@ -53,15 +45,8 @@ function App() {
             <Route path="notifications" element={<Notifications />} />
           </Route>
 
-          {/* Admin Routes */}
-          <Route
-            path="/dashboard/admin"
-            element={
-              <PrivateRoute adminOnly>
-                <AdminDashboardLayout />
-              </PrivateRoute>
-            }
-          >
+          {/* Admin Routes - Temporarily without protection */}
+          <Route path="/dashboard/admin" element={<AdminDashboardLayout />}>
             <Route index element={<AdminDashboard />} />
             <Route path="appointments" element={<Appointments />} />
             <Route path="services" element={<Services />} />
