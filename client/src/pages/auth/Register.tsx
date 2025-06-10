@@ -1,236 +1,157 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
-import { useForm } from 'react-hook-form';
-import { toast } from 'react-hot-toast';
+import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
-
-interface RegisterFormData {
-  email: string;
-  password: string;
-  firstName: string;
-  lastName: string;
-  role: 'owner' | 'barber' | 'client';
-  phone?: string;
-}
+import { toast } from 'react-hot-toast';
 
 export default function Register() {
+  const navigate = useNavigate();
+  const { signUp } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
-  const { register: registerUser } = useAuth();
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<RegisterFormData>();
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    password: '',
+    confirmPassword: '',
+    role: 'client' as 'client' | 'admin'
+  });
 
-  const onSubmit = async (data: RegisterFormData) => {
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (formData.password !== formData.confirmPassword) {
+      toast.error('As senhas não coincidem');
+      return;
+    }
+
+    setIsLoading(true);
+
     try {
-      setIsLoading(true);
-      await registerUser(data);
-      toast.success('Registration successful! Please sign in.');
+      await signUp(formData.name, formData.email, formData.password, formData.role);
+      toast.success('Conta criada com sucesso!');
+      navigate(formData.role === 'client' ? '/dashboard/client' : '/dashboard/admin');
     } catch (error) {
-      toast.error('Registration failed. Please try again.');
+      toast.error('Erro ao criar conta. Verifique os dados informados.');
     } finally {
       setIsLoading(false);
     }
   };
 
   return (
-    <>
-      <div>
-        <h2 className="text-center text-2xl font-bold leading-9 tracking-tight text-gray-900">
-          Create your account
-        </h2>
-        <p className="mt-2 text-center text-sm text-gray-600">
-          Already have an account?{' '}
-          <Link
-            to="/login"
-            className="font-medium text-accent-600 hover:text-accent-500"
-          >
-            Sign in
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-md w-full space-y-8">
+        <div>
+          <Link to="/">
+            <img
+              className="mx-auto h-12 w-auto"
+              src="/assets/images/logo-agensasis-.png"
+              alt="AgendaSis"
+            />
           </Link>
-        </p>
-      </div>
-
-      <div className="mt-10">
-        <form className="space-y-6" onSubmit={handleSubmit(onSubmit)}>
-          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
+            Crie sua conta
+          </h2>
+        </div>
+        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
+          <div className="rounded-md shadow-sm -space-y-px">
             <div>
-              <label
-                htmlFor="firstName"
-                className="block text-sm font-medium leading-6 text-gray-900"
-              >
-                First name
+              <label htmlFor="name" className="sr-only">
+                Nome completo
               </label>
-              <div className="mt-2">
-                <input
-                  id="firstName"
-                  type="text"
-                  autoComplete="given-name"
-                  required
-                  className={`block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ${
-                    errors.firstName ? 'ring-red-300' : 'ring-gray-300'
-                  } placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-accent-600 sm:text-sm sm:leading-6`}
-                  {...register('firstName', {
-                    required: 'First name is required',
-                  })}
-                />
-                {errors.firstName && (
-                  <p className="mt-2 text-sm text-red-600">
-                    {errors.firstName.message}
-                  </p>
-                )}
-              </div>
+              <input
+                id="name"
+                name="name"
+                type="text"
+                required
+                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-primary focus:border-primary focus:z-10 sm:text-sm"
+                placeholder="Nome completo"
+                value={formData.name}
+                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+              />
             </div>
-
             <div>
-              <label
-                htmlFor="lastName"
-                className="block text-sm font-medium leading-6 text-gray-900"
-              >
-                Last name
+              <label htmlFor="email" className="sr-only">
+                Email
               </label>
-              <div className="mt-2">
-                <input
-                  id="lastName"
-                  type="text"
-                  autoComplete="family-name"
-                  required
-                  className={`block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ${
-                    errors.lastName ? 'ring-red-300' : 'ring-gray-300'
-                  } placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-accent-600 sm:text-sm sm:leading-6`}
-                  {...register('lastName', {
-                    required: 'Last name is required',
-                  })}
-                />
-                {errors.lastName && (
-                  <p className="mt-2 text-sm text-red-600">
-                    {errors.lastName.message}
-                  </p>
-                )}
-              </div>
-            </div>
-          </div>
-
-          <div>
-            <label
-              htmlFor="email"
-              className="block text-sm font-medium leading-6 text-gray-900"
-            >
-              Email address
-            </label>
-            <div className="mt-2">
               <input
                 id="email"
+                name="email"
                 type="email"
                 autoComplete="email"
                 required
-                className={`block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ${
-                  errors.email ? 'ring-red-300' : 'ring-gray-300'
-                } placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-accent-600 sm:text-sm sm:leading-6`}
-                {...register('email', {
-                  required: 'Email is required',
-                  pattern: {
-                    value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                    message: 'Invalid email address',
-                  },
-                })}
+                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-primary focus:border-primary focus:z-10 sm:text-sm"
+                placeholder="Email"
+                value={formData.email}
+                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
               />
-              {errors.email && (
-                <p className="mt-2 text-sm text-red-600">{errors.email.message}</p>
-              )}
             </div>
-          </div>
-
-          <div>
-            <label
-              htmlFor="password"
-              className="block text-sm font-medium leading-6 text-gray-900"
-            >
-              Password
-            </label>
-            <div className="mt-2">
+            <div>
+              <label htmlFor="password" className="sr-only">
+                Senha
+              </label>
               <input
                 id="password"
+                name="password"
                 type="password"
                 autoComplete="new-password"
                 required
-                className={`block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ${
-                  errors.password ? 'ring-red-300' : 'ring-gray-300'
-                } placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-accent-600 sm:text-sm sm:leading-6`}
-                {...register('password', {
-                  required: 'Password is required',
-                  minLength: {
-                    value: 6,
-                    message: 'Password must be at least 6 characters',
-                  },
-                })}
+                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-primary focus:border-primary focus:z-10 sm:text-sm"
+                placeholder="Senha"
+                value={formData.password}
+                onChange={(e) => setFormData({ ...formData, password: e.target.value })}
               />
-              {errors.password && (
-                <p className="mt-2 text-sm text-red-600">
-                  {errors.password.message}
-                </p>
-              )}
             </div>
-          </div>
-
-          <div>
-            <label
-              htmlFor="role"
-              className="block text-sm font-medium leading-6 text-gray-900"
-            >
-              I am a...
-            </label>
-            <div className="mt-2">
-              <select
-                id="role"
-                required
-                className={`block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ${
-                  errors.role ? 'ring-red-300' : 'ring-gray-300'
-                } focus:ring-2 focus:ring-inset focus:ring-accent-600 sm:text-sm sm:leading-6`}
-                {...register('role', {
-                  required: 'Please select a role',
-                })}
-              >
-                <option value="">Select your role</option>
-                <option value="owner">Barbershop Owner</option>
-                <option value="barber">Barber</option>
-                <option value="client">Client</option>
-              </select>
-              {errors.role && (
-                <p className="mt-2 text-sm text-red-600">{errors.role.message}</p>
-              )}
-            </div>
-          </div>
-
-          <div>
-            <label
-              htmlFor="phone"
-              className="block text-sm font-medium leading-6 text-gray-900"
-            >
-              Phone number (optional)
-            </label>
-            <div className="mt-2">
+            <div>
+              <label htmlFor="confirmPassword" className="sr-only">
+                Confirmar senha
+              </label>
               <input
-                id="phone"
-                type="tel"
-                autoComplete="tel"
-                className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-accent-600 sm:text-sm sm:leading-6"
-                {...register('phone')}
+                id="confirmPassword"
+                name="confirmPassword"
+                type="password"
+                autoComplete="new-password"
+                required
+                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-primary focus:border-primary focus:z-10 sm:text-sm"
+                placeholder="Confirmar senha"
+                value={formData.confirmPassword}
+                onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
               />
             </div>
+          </div>
+
+          <div>
+            <select
+              className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-primary focus:border-primary sm:text-sm rounded-md"
+              value={formData.role}
+              onChange={(e) => setFormData({ ...formData, role: e.target.value as 'client' | 'admin' })}
+            >
+              <option value="client">Cliente</option>
+              <option value="admin">Administrador</option>
+            </select>
           </div>
 
           <div>
             <button
               type="submit"
               disabled={isLoading}
-              className="flex w-full justify-center rounded-md bg-accent-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-accent-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-600 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-gradient-to-r from-primary to-primary-light hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary disabled:opacity-50"
             >
-              {isLoading ? 'Creating account...' : 'Create account'}
+              {isLoading ? 'Criando conta...' : 'Criar conta'}
             </button>
+          </div>
+
+          <div className="text-center">
+            <p className="text-sm text-gray-600">
+              Já tem uma conta?{' '}
+              <Link
+                to="/auth/login"
+                className="font-medium text-primary hover:text-primary-dark"
+              >
+                Entre aqui
+              </Link>
+            </p>
           </div>
         </form>
       </div>
-    </>
+    </div>
   );
 } 

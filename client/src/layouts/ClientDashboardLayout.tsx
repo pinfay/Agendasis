@@ -4,19 +4,19 @@ import { useAuth } from '../contexts/AuthContext';
 import {
   CalendarIcon,
   ClockIcon,
-  UserIcon,
+  UserCircleIcon,
   BellIcon,
-  ArrowLeftOnRectangleIcon,
+  ArrowLeftOnRectangleIcon
 } from '@heroicons/react/24/outline';
 
 const navigation = [
-  { name: 'Dashboard', href: '/dashboard', icon: CalendarIcon },
-  { name: 'Histórico', href: '/dashboard/history', icon: ClockIcon },
-  { name: 'Perfil', href: '/dashboard/profile', icon: UserIcon },
-  { name: 'Notificações', href: '/dashboard/notifications', icon: BellIcon },
+  { name: 'Agendar', href: '/dashboard/client', icon: CalendarIcon },
+  { name: 'Histórico', href: '/dashboard/client/history', icon: ClockIcon },
+  { name: 'Perfil', href: '/dashboard/client/profile', icon: UserCircleIcon },
+  { name: 'Notificações', href: '/dashboard/client/notifications', icon: BellIcon },
 ];
 
-export default function DashboardLayout() {
+export default function ClientDashboardLayout() {
   const { user, signOut } = useAuth();
   const location = useLocation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -49,7 +49,7 @@ export default function DashboardLayout() {
               <Link
                 key={item.name}
                 to={item.href}
-                className={`group flex items-center px-2 py-2 text-sm font-medium rounded-md mb-1 ${
+                className={`group flex items-center px-2 py-2 text-sm font-medium rounded-md ${
                   location.pathname === item.href
                     ? 'bg-primary/10 text-primary'
                     : 'text-gray-700 hover:bg-gray-50 hover:text-gray-900'
@@ -119,17 +119,6 @@ export default function DashboardLayout() {
 
           <div className="flex flex-1 justify-end gap-x-4 self-stretch lg:gap-x-6">
             <div className="flex items-center gap-x-4 lg:gap-x-6">
-              {/* Notifications */}
-              <Link
-                to="/dashboard/notifications"
-                className="relative p-1 text-gray-700 hover:text-gray-900"
-              >
-                <span className="sr-only">Ver notificações</span>
-                <BellIcon className="h-6 w-6" aria-hidden="true" />
-                <span className="absolute top-0 right-0 block h-2 w-2 rounded-full bg-red-400 ring-2 ring-white" />
-              </Link>
-
-              {/* Profile */}
               <span className="text-sm text-gray-700">
                 Olá, {user?.name}
               </span>

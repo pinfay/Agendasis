@@ -1,71 +1,45 @@
 /// <reference types="vite/client" />
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import axios from 'axios';
+import api from '../services/api';
 import { toast } from 'react-hot-toast';
 
 interface User {
   id: string;
+  name: string;
   email: string;
-  firstName: string;
-  lastName: string;
-  role: string;
+  role: 'client' | 'admin';
 }
 
-interface AuthContextType {
+interface AuthContextData {
   user: User | null;
-  login: (data: { email: string; password: string }) => Promise<void>;
-  register: (data: RegisterData) => Promise<void>;
-  logout: () => void;
   isAuthenticated: boolean;
-  isLoading: boolean;
+  loading: boolean;
+  signIn: (email: string, password: string, role: 'client' | 'admin') => Promise<void>;
+  signUp: (name: string, email: string, password: string, role: 'client' | 'admin') => Promise<void>;
+  signOut: () => void;
 }
 
-interface RegisterData {
-  email: string;
-  password: string;
-  firstName: string;
-  lastName: string;
-  role: string;
-  phone?: string;
+interface AuthProviderProps {
+  children: ReactNode;
 }
 
-interface LoginResponse {
-  token: string;
-  user: User;
-}
+const AuthContext = createContext({} as AuthContextData);
 
-interface ErrorResponse {
-  message: string;
-}
-
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
-
-const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:3000/api',
-});
-
-export function AuthProvider({ children }: { children: ReactNode }) {
+export function AuthProvider({ children }: AuthProviderProps) {
   const [user, setUser] = useState<User | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const initializeAuth = async () => {
-      const token = localStorage.getItem('token');
-      if (token) {
-        try {
-          api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-          const response = await api.get<User>('/users/me');
-          setUser(response.data);
-        } catch (error) {
-          console.error('Failed to load user:', error);
-          localStorage.removeItem('token');
-          delete api.defaults.headers.common['Authorization'];
-        }
-      }
-      setIsLoading(false);
-    };
+    // Check if there's a stored token
+    const token = localStorage.getItem('@AgendaSis:token');
+    const storedUser = localStorage.getItem('@AgendaSis:user');
 
-    initializeAuth();
+    if (token && storedUser) {
+      api.defaults.headers.authorization = `Bearer ${token}`;
+      setUser(JSON.parse(storedUser));
+    }
+
+    setLoading(false);
   }, []);
 
   const handleError = (error: any) => {
@@ -74,60 +48,67 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     throw error;
   };
 
-  const login = async (data: { email: string; password: string }) => {
+  const signIn = async (email: string, password: string, role: 'client' | 'admin') => {
     try {
-      setIsLoading(true);
-      const response = await api.post<LoginResponse>('/auth/login', data);
+      const response = await api.post('/auth/login', {
+        email,
+        password,
+        role
+      });
+
       const { token, user: userData } = response.data;
-      localStorage.setItem('token', token);
-      api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+
+      localStorage.setItem('@AgendaSis:token', token);
+      localStorage.setItem('@AgendaSis:user', JSON.stringify(userData));
+
+      api.defaults.headers.authorization = `Bearer ${token}`;
       setUser(userData);
     } catch (error) {
       handleError(error);
-    } finally {
-      setIsLoading(false);
     }
   };
 
-  const register = async (data: RegisterData) => {
+  const signUp = async (name: string, email: string, password: string, role: 'client' | 'admin') => {
     try {
-      setIsLoading(true);
-      await api.post('/auth/register', data);
-      toast.success('Registration successful! Please log in.');
+      const response = await api.post('/auth/register', {
+        name,
+        email,
+        password,
+        role
+      });
+
+      const { token, user: userData } = response.data;
+
+      localStorage.setItem('@AgendaSis:token', token);
+      localStorage.setItem('@AgendaSis:user', JSON.stringify(userData));
+
+      api.defaults.headers.authorization = `Bearer ${token}`;
+      setUser(userData);
     } catch (error) {
       handleError(error);
-    } finally {
-      setIsLoading(false);
     }
   };
 
-  const logout = () => {
-    localStorage.removeItem('token');
-    delete api.defaults.headers.common['Authorization'];
+  const signOut = () => {
+    localStorage.removeItem('@AgendaSis:token');
+    localStorage.removeItem('@AgendaSis:user');
     setUser(null);
+    api.defaults.headers.authorization = '';
     toast.success('Logged out successfully');
   };
 
   return (
-    <AuthContext.Provider
-      value={{
-        user,
-        login,
-        register,
-        logout,
-        isAuthenticated: !!user,
-        isLoading,
-      }}
-    >
+    <AuthContext.Provider value={{
+      user,
+      isAuthenticated: !!user,
+      loading,
+      signIn,
+      signUp,
+      signOut
+    }}>
       {children}
     </AuthContext.Provider>
   );
 }
 
-export function useAuth() {
-  const context = useContext(AuthContext);
-  if (context === undefined) {
-    throw new Error('useAuth must be used within an AuthProvider');
-  }
-  return context;
-} 
+export const useAuth = () => useContext(AuthContext); 

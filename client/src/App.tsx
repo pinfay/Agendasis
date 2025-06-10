@@ -1,125 +1,82 @@
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 import { AuthProvider } from './contexts/AuthContext';
-import ProtectedRoute from './components/ProtectedRoute';
-import DashboardLayout from './components/DashboardLayout';
-import AdminDashboard from './pages/AdminDashboard';
+import PrivateRoute from './components/PrivateRoute';
 
-// Pages
+// Layouts
+import DashboardLayout from './layouts/DashboardLayout';
+import AdminDashboardLayout from './layouts/AdminDashboardLayout';
+
+// Public Pages
 import Landing from './pages/Landing';
 import Login from './pages/auth/Login';
 import Register from './pages/auth/Register';
-import OwnerDashboard from './pages/dashboard/owner/Dashboard';
-import BarberDashboard from './pages/dashboard/barber/Dashboard';
-import ClientDashboard from './pages/dashboard/client/Dashboard';
-import Appointments from './pages/dashboard/Appointments';
-import Services from './pages/dashboard/Services';
-import Reviews from './pages/dashboard/Reviews';
-import Profile from './pages/dashboard/Profile';
-import AppointmentForm from './pages/AppointmentForm';
-import OnboardingTutorial from './components/OnboardingTutorial';
 
-const App = () => {
+// Client Pages
+import ClientDashboard from './pages/client/Dashboard';
+import Schedule from './pages/client/Schedule';
+import History from './pages/client/History';
+import Profile from './pages/client/Profile';
+import Notifications from './pages/client/Notifications';
+
+// Admin Pages
+import AdminDashboard from './pages/admin/Dashboard';
+import Appointments from './pages/admin/Appointments';
+import Services from './pages/admin/Services';
+import Staff from './pages/admin/Staff';
+import Reports from './pages/admin/Reports';
+import Settings from './pages/admin/Settings';
+
+function App() {
   return (
-    <Router>
+    <BrowserRouter>
       <AuthProvider>
+        <Routes>
+          {/* Public Routes */}
+          <Route path="/" element={<Landing />} />
+          <Route path="/auth/login" element={<Login />} />
+          <Route path="/auth/register" element={<Register />} />
+
+          {/* Client Routes */}
+          <Route
+            path="/dashboard"
+            element={
+              <PrivateRoute>
+                <DashboardLayout />
+              </PrivateRoute>
+            }
+          >
+            <Route index element={<ClientDashboard />} />
+            <Route path="schedule" element={<Schedule />} />
+            <Route path="history" element={<History />} />
+            <Route path="profile" element={<Profile />} />
+            <Route path="notifications" element={<Notifications />} />
+          </Route>
+
+          {/* Admin Routes */}
+          <Route
+            path="/dashboard/admin"
+            element={
+              <PrivateRoute adminOnly>
+                <AdminDashboardLayout />
+              </PrivateRoute>
+            }
+          >
+            <Route index element={<AdminDashboard />} />
+            <Route path="appointments" element={<Appointments />} />
+            <Route path="services" element={<Services />} />
+            <Route path="staff" element={<Staff />} />
+            <Route path="reports" element={<Reports />} />
+            <Route path="settings" element={<Settings />} />
+          </Route>
+
+          {/* Fallback */}
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
         <Toaster position="top-right" />
-        <div className="min-h-screen bg-gray-900 text-white">
-          <Routes>
-            {/* Public routes */}
-            <Route path="/" element={<Landing />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
-
-            {/* Protected routes */}
-            <Route
-              path="/owner/dashboard"
-              element={
-                <ProtectedRoute allowedRoles={['owner']}>
-                  <OwnerDashboard />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/barber/dashboard"
-              element={
-                <ProtectedRoute allowedRoles={['barber']}>
-                  <BarberDashboard />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/client/dashboard"
-              element={
-                <ProtectedRoute allowedRoles={['client']}>
-                  <ClientDashboard />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/appointments"
-              element={
-                <ProtectedRoute>
-                  <Appointments />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/services"
-              element={
-                <ProtectedRoute>
-                  <Services />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/reviews"
-              element={
-                <ProtectedRoute>
-                  <Reviews />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/profile"
-              element={
-                <ProtectedRoute>
-                  <Profile />
-                </ProtectedRoute>
-              }
-            />
-
-            {/* Admin routes */}
-            <Route
-              path="/admin"
-              element={
-                <ProtectedRoute allowedRoles={['admin']}>
-                  <DashboardLayout />
-                </ProtectedRoute>
-              }
-            >
-              <Route index element={<AdminDashboard />} />
-            </Route>
-            <Route path="/agendar" element={<AppointmentForm />} />
-            <Route path="/tutorial" element={<OnboardingTutorial />} />
-
-            {/* Client routes - to be implemented */}
-            <Route
-              path="/cliente"
-              element={
-                <ProtectedRoute allowedRoles={['client']}>
-                  <ClientDashboard />
-                </ProtectedRoute>
-              }
-            />
-
-            {/* Fallback route */}
-            <Route path="*" element={<Navigate to="/login" replace />} />
-          </Routes>
-        </div>
       </AuthProvider>
-    </Router>
+    </BrowserRouter>
   );
-};
+}
 
 export default App; 

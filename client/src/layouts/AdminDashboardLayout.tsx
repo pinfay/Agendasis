@@ -2,24 +2,30 @@ import { useState } from 'react';
 import { Link, Outlet, useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import {
+  ChartBarIcon,
   CalendarIcon,
-  ClockIcon,
-  UserIcon,
-  BellIcon,
+  ScissorsIcon,
+  UsersIcon,
+  DocumentChartBarIcon,
+  Cog6ToothIcon,
   ArrowLeftOnRectangleIcon,
+  BellIcon,
 } from '@heroicons/react/24/outline';
 
 const navigation = [
-  { name: 'Dashboard', href: '/dashboard', icon: CalendarIcon },
-  { name: 'Histórico', href: '/dashboard/history', icon: ClockIcon },
-  { name: 'Perfil', href: '/dashboard/profile', icon: UserIcon },
-  { name: 'Notificações', href: '/dashboard/notifications', icon: BellIcon },
+  { name: 'Dashboard', href: '/dashboard/admin', icon: ChartBarIcon },
+  { name: 'Agendamentos', href: '/dashboard/admin/appointments', icon: CalendarIcon },
+  { name: 'Serviços', href: '/dashboard/admin/services', icon: ScissorsIcon },
+  { name: 'Funcionários', href: '/dashboard/admin/staff', icon: UsersIcon },
+  { name: 'Relatórios', href: '/dashboard/admin/reports', icon: DocumentChartBarIcon },
+  { name: 'Configurações', href: '/dashboard/admin/settings', icon: Cog6ToothIcon },
 ];
 
-export default function DashboardLayout() {
+export default function AdminDashboardLayout() {
   const { user, signOut } = useAuth();
   const location = useLocation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [notifications] = useState(2); // Mock notifications count
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -120,14 +126,13 @@ export default function DashboardLayout() {
           <div className="flex flex-1 justify-end gap-x-4 self-stretch lg:gap-x-6">
             <div className="flex items-center gap-x-4 lg:gap-x-6">
               {/* Notifications */}
-              <Link
-                to="/dashboard/notifications"
-                className="relative p-1 text-gray-700 hover:text-gray-900"
-              >
+              <button className="relative p-1 text-gray-700 hover:text-gray-900">
                 <span className="sr-only">Ver notificações</span>
                 <BellIcon className="h-6 w-6" aria-hidden="true" />
-                <span className="absolute top-0 right-0 block h-2 w-2 rounded-full bg-red-400 ring-2 ring-white" />
-              </Link>
+                {notifications > 0 && (
+                  <span className="absolute top-0 right-0 block h-2 w-2 rounded-full bg-red-400 ring-2 ring-white" />
+                )}
+              </button>
 
               {/* Profile */}
               <span className="text-sm text-gray-700">
