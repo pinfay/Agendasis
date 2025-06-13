@@ -251,3 +251,39 @@ Para testar o sistema de pagamento em ambiente de desenvolvimento:
 - [ ] Dashboard de transações
 - [ ] Relatórios financeiros
 - [ ] Sistema de split de pagamentos 
+
+## 🖌️ Novas Funcionalidades de UX/UI (Frontend)
+
+O frontend do Agendasis agora conta com:
+
+- **Tema Claro/Escuro:**
+  - Alternância de tema no topo da página, ao lado dos botões de Login e Teste Grátis.
+  - O layout inteiro muda automaticamente entre claro e escuro.
+- **Feedback Visual (Toast):**
+  - Notificações visuais para sucesso, erro, aviso e informação.
+  - Exemplo de uso disponível na página inicial (Landing).
+- **Responsividade:**
+  - Layout adaptado para dispositivos móveis e desktop.
+- **Acessibilidade:**
+  - Foco visível, contraste aprimorado e navegação por teclado.
+
+### Como testar
+
+1. Acesse o frontend em [http://localhost:5173](http://localhost:5173)
+2. Use o botão de alternância de tema no topo para mudar entre claro e escuro.
+3. Na página inicial, utilize os botões de feedback para ver os toasts de diferentes tipos.
+4. Redimensione a janela para testar a responsividade.
+5. Navegue com Tab para testar acessibilidade.
+
+### Exemplo de Toast
+
+```tsx
+import toast from 'react-hot-toast';
+
+toast.success('Operação realizada com sucesso!');
+toast.error('Ocorreu um erro!');
+toast('Mensagem informativa!');
+toast('Atenção!', { icon: '⚠️' });
+```
+
+--- 
