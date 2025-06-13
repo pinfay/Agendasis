@@ -11,6 +11,7 @@ import {
   ArrowPathIcon,
   ShieldCheckIcon,
 } from '@heroicons/react/24/outline';
+import DisparoFeedback from '../components/disparoFeedback';
 
 interface FadeInSectionProps {
   children: React.ReactNode;
@@ -225,6 +226,7 @@ export default function Landing() {
           </FadeInSection>
         </div>
       </section>
+      <DisparoFeedback />
     </div>
   );
 } 

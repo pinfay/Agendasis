@@ -1,0 +1,78 @@
+:root {
+  /* Cores principais da marca */
+  --primary-color: #4A90E2;
+  --secondary-color: #2C3E50;
+  --accent-color: #E74C3C;
+  
+  /* Cores de fundo */
+  --background-light: #FFFFFF;
+  --background-dark: #1A1A1A;
+  
+  /* Cores de texto */
+  --text-light: #333333;
+  --text-dark: #FFFFFF;
+  
+  /* Cores de feedback */
+  --success: #2ECC71;
+  --error: #E74C3C;
+  --warning: #F1C40F;
+  --info: #3498DB;
+  
+  /* Espaçamento */
+  --spacing-xs: 0.25rem;
+  --spacing-sm: 0.5rem;
+  --spacing-md: 1rem;
+  --spacing-lg: 1.5rem;
+  --spacing-xl: 2rem;
+  
+  /* Bordas */
+  --border-radius-sm: 4px;
+  --border-radius-md: 8px;
+  --border-radius-lg: 12px;
+  
+  /* Sombras */
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.12);
+  --shadow-md: 0 4px 6px rgba(0,0,0,0.1);
+  --shadow-lg: 0 10px 15px rgba(0,0,0,0.1);
+}
+
+/* Tema claro (padrão) */
+[data-theme="light"] {
+  --background: var(--background-light);
+  --text: var(--text-light);
+  --card-background: #FFFFFF;
+  --border-color: #E1E1E1;
+}
+
+/* Tema escuro */
+[data-theme="dark"] {
+  --background: var(--background-dark);
+  --text: var(--text-dark);
+  --card-background: #2C2C2C;
+  --border-color: #404040;
+}
+
+/* Estilos responsivos */
+@media (max-width: 768px) {
+  :root {
+    --spacing-lg: 1.25rem;
+    --spacing-xl: 1.75rem;
+  }
+}
+
+/* Melhorias de acessibilidade */
+:focus {
+  outline: 2px solid var(--primary-color);
+  outline-offset: 2px;
+}
+
+/* Estilos de transição suave */
+* {
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+body, #root {
+  background: var(--background);
+  color: var(--text);
+  transition: background 0.3s, color 0.3s;
+} 

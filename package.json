@@ -1,35 +1,48 @@
 {
   "name": "agendasis",
   "version": "1.0.0",
-  "description": "Sistema de agendamento",
-  "main": "index.js",
+  "description": "SaaS de agendamentos com Node.js, Express, Prisma e PostgreSQL",
+  "main": "src/server.ts",
   "scripts": {
-    "start": "ts-node server/src/index.ts",
-    "dev": "nodemon server/src/index.ts",
+    "dev": "ts-node-dev --respawn --transpile-only src/server.ts",
+    "dev:all": "concurrently \"npm run dev\" \"cd client && npm run dev\"",
     "build": "tsc",
-    "seed": "ts-node prisma/seed.ts"
+    "start": "node dist/server.js",
+    "test": "jest",
+    "prisma:generate": "prisma generate",
+    "prisma:migrate": "prisma migrate deploy",
+    "prisma:studio": "prisma studio"
   },
   "dependencies": {
-    "@prisma/client": "^6.9.0",
-    "bcryptjs": "^3.0.2",
+    "@prisma/client": "^5.10.0",
+    "@types/socket.io": "^3.0.1",
+    "concurrently": "^8.2.2",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.0",
     "express": "^4.18.2",
-    "express-validator": "^7.0.1",
-    "react-hook-form": "^7.57.0",
-    "react-intersection-observer": "^9.16.0"
+    "express-async-errors": "^3.1.1",
+    "helmet": "^7.1.0",
+    "morgan": "^1.10.0",
+    "socket.io": "^4.8.1",
+    "zod": "^3.22.4"
   },
   "devDependencies": {
-    "@types/bcryptjs": "^2.4.6",
+    "@types/cors": "^2.8.17",
     "@types/express": "^4.17.21",
-    "@types/node": "^20.19.0",
-    "@vitejs/plugin-react": "^4.5.1",
-    "nodemon": "^3.0.2",
-    "prisma": "^6.9.0",
-    "tailwindcss-animate": "^1.0.7",
-    "ts-node": "^10.9.2",
-    "typescript": "^5.8.3",
-    "vite": "^6.3.5"
+    "@types/jest": "^29.5.12",
+    "@types/morgan": "^1.9.9",
+    "@types/node": "^20.11.16",
+    "@typescript-eslint/eslint-plugin": "^6.21.0",
+    "@typescript-eslint/parser": "^6.21.0",
+    "eslint": "^8.56.0",
+    "jest": "^29.7.0",
+    "prisma": "^5.10.0",
+    "ts-jest": "^29.1.2",
+    "ts-node-dev": "^2.0.0",
+    "typescript": "^5.3.3"
   },
-  "prisma": {
-    "seed": "ts-node prisma/seed.ts"
-  }
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "license": "MIT"
 }

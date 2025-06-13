@@ -116,6 +116,12 @@ export default function Login() {
               </Link>
             </p>
           </div>
+
+          <div className="flex flex-col space-y-2 text-sm text-center">
+            <Link to="/auth/register/establishment" className="font-medium text-purple-400 hover:text-purple-300">
+              É proprietário de um estabelecimento? Registre-se aqui
+            </Link>
+          </div>
         </form>
       </div>
     </div>

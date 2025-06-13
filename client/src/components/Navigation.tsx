@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Menu } from '@headlessui/react';
 import { ChevronDownIcon } from '@heroicons/react/24/outline';
+import ThemeSwitch from './ThemeSwitch';
 
 export default function Navigation() {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -125,6 +126,7 @@ export default function Navigation() {
             >
               Teste Grátis
             </Link>
+            <ThemeSwitch />
           </div>
         </div>
       </nav>

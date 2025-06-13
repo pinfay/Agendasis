@@ -26,7 +26,10 @@ model User {
   appointments  Appointment[]
   reviews       Review[]
   feedbacks     Feedback[]
+  notifications Notification[]
   loyaltyPoints Int          @default(0)
+  ownedEstablishment Establishment? @relation("EstablishmentOwner")
+  barberAtEstablishment Establishment? @relation("EstablishmentBarbers")
 }
 
 model Barber {
@@ -98,6 +101,31 @@ model Feedback {
   user      User     @relation(fields: [userId], references: [id])
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model Notification {
+  id        String   @id @default(uuid())
+  type      String   // 'APPOINTMENT_CREATED', 'APPOINTMENT_UPDATED', 'APPOINTMENT_CANCELLED', etc.
+  message   String
+  userId    String
+  read      Boolean  @default(false)
+  user      User     @relation(fields: [userId], references: [id])
+  createdAt DateTime @default(now())
+}
+
+model Establishment {
+  id            String    @id @default(uuid())
+  name          String
+  cnpj          String    @unique
+  address       String
+  phone         String
+  email         String    @unique
+  ownerId       String    @unique
+  owner         User      @relation("EstablishmentOwner", fields: [ownerId], references: [id])
+  barbers       User[]    @relation("EstablishmentBarbers")
+  services      Service[]
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
 }
 
 enum Role {

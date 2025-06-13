@@ -21,7 +21,7 @@ export default function PrivateRoute({ children, adminOnly = false }: PrivateRou
     return <Navigate to="/auth/login" />;
   }
 
-  if (adminOnly && user.role !== 'admin') {
+  if (adminOnly && user.role !== 'ADMIN') {
     return <Navigate to="/dashboard" />;
   }
 

@@ -1,51 +1,53 @@
 # Dependencies
-node_modules/
-/.pnp
+node_modules
+.pnp
 .pnp.js
 
-# Testing
-/coverage
-
-# Production
-/build
-/dist
-
-# Environment variables
+# Environment
 .env
 .env.local
 .env.development.local
 .env.test.local
 .env.production.local
 
+# Build
+dist
+build
+out
+
 # Logs
+logs
+*.log
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
+# Testing
+coverage
+
 # IDEs and editors
-/.idea
+.idea
+.vscode
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# Prisma
+prisma/*.db
+prisma/migrations/*_init
+
+# Misc
 .project
 .classpath
 .c9/
 *.launch
 .settings/
 *.sublime-workspace
-.vscode/*
-
-# Misc
-.DS_Store
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
 
 # Database
 *.sqlite
 *.sqlite3
-
-# Prisma
-prisma/*.db
-prisma/migrations/
 
 # Client build
 client/build/

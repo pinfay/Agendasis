@@ -17,19 +17,35 @@ interface AuthContextData {
   isAuthenticated: boolean;
   loading: boolean;
   signIn: (email: string, password: string) => Promise<void>;
-  signUp: (data: {
-    firstName: string;
-    lastName: string;
-    email: string;
-    password: string;
-    role: 'CLIENT' | 'ADMIN' | 'OWNER' | 'BARBER';
-    phone?: string;
-  }) => Promise<void>;
+  signUp: (data: RegisterData) => Promise<void>;
+  signUpEstablishment: (data: RegisterEstablishmentData) => Promise<void>;
   signOut: () => void;
 }
 
 interface AuthProviderProps {
   children: ReactNode;
+}
+
+interface RegisterData {
+  firstName: string;
+  lastName: string;
+  email: string;
+  password: string;
+  role: 'CLIENT' | 'ADMIN' | 'OWNER' | 'BARBER';
+  phone?: string;
+}
+
+interface RegisterEstablishmentData {
+  firstName: string;
+  lastName: string;
+  email: string;
+  password: string;
+  phone: string;
+  establishmentName: string;
+  cnpj: string;
+  address: string;
+  establishmentPhone: string;
+  establishmentEmail: string;
 }
 
 const AuthContext = createContext({} as AuthContextData);
@@ -76,14 +92,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     }
   };
 
-  const signUp = async (data: {
-    firstName: string;
-    lastName: string;
-    email: string;
-    password: string;
-    role: 'CLIENT' | 'ADMIN' | 'OWNER' | 'BARBER';
-    phone?: string;
-  }) => {
+  const signUp = async (data: RegisterData) => {
     try {
       const response = await api.post('/auth/register', data);
 
@@ -99,9 +108,27 @@ export function AuthProvider({ children }: AuthProviderProps) {
     }
   };
 
+  const signUpEstablishment = async (data: RegisterEstablishmentData) => {
+    try {
+      const response = await api.post('/auth/register/establishment', data);
+
+      const { token, user: userData, establishment } = response.data;
+
+      localStorage.setItem('@AgendaSis:token', token);
+      localStorage.setItem('@AgendaSis:user', JSON.stringify(userData));
+      localStorage.setItem('@AgendaSis:establishment', JSON.stringify(establishment));
+
+      api.defaults.headers.authorization = `Bearer ${token}`;
+      setUser(userData);
+    } catch (error) {
+      handleError(error);
+    }
+  };
+
   const signOut = () => {
     localStorage.removeItem('@AgendaSis:token');
     localStorage.removeItem('@AgendaSis:user');
+    localStorage.removeItem('@AgendaSis:establishment');
     setUser(null);
     api.defaults.headers.authorization = '';
     toast.success('Logged out successfully');
@@ -114,6 +141,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
       loading,
       signIn,
       signUp,
+      signUpEstablishment,
       signOut
     }}>
       {children}

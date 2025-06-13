@@ -1,37 +1,40 @@
 version: '3.8'
 
 services:
-  # Serviço principal do banco de dados PostgreSQL
-  postgres:
-    image: postgres:16  # Versão específica do PostgreSQL
-    container_name: agendasis_postgres  # Nome do container para fácil referência
-    
-    # Mapeamento de porta - host:container
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=development
+      - DATABASE_URL=postgresql://postgres:postgres@db:5432/agendasis?schema=public
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+    depends_on:
+      - db
+    command: sh -c "npm run prisma:generate && npm run prisma:migrate && npm run dev"
+    networks:
+      - agendasis-network
+
+  db:
+    image: postgres:15-alpine
     ports:
       - "5432:5432"
-    
-    # Variáveis de ambiente para configuração do PostgreSQL
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: admin
-      POSTGRES_DB: agendasis_db
-    
-    # Volume persistente para armazenar os dados
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=agendasis
     volumes:
       - postgres_data:/var/lib/postgresql/data
-    
-    # Configurações de saúde do container
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-    
-    # Configurações adicionais
-    restart: unless-stopped  # Reinicia automaticamente em caso de falha
+    networks:
+      - agendasis-network
 
-# Definição dos volumes
 volumes:
   postgres_data:
-    # Volume nomeado para persistência dos dados
-    name: agendasis_postgres_data 
+
+networks:
+  agendasis-network:
+    driver: bridge 
